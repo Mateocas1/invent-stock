@@ -28,15 +28,15 @@ async function main(): Promise<void> {
   try {
     // Validate configuration
     validateConfig();
-    console.log(`   Version: ${config.version}\n`);
+    console.log(` Version: ${config.version}\n`);
 
     // Initialize database
     db = await createDatabaseAdapterFromEnv();
     console.log('✅ Database connected');
-    console.log(`   Type: ${config.database.type}`);
+    console.log(` Type: ${config.database.type}`);
 
     if (config.database.type === 'sqlite') {
-      console.log(`   Path: ${config.database.path}`);
+      console.log(` Path: ${config.database.path}`);
     }
 
     // Wait for database to be fully initialized
@@ -83,8 +83,9 @@ async function main(): Promise<void> {
       } catch (error) {
         retries++;
         const retryDelay = Math.min(10000 * retries, 60000); // Max 60 seconds delay
-        console.log(`
-🔁 Database not ready (${retries}/${maxRetries}) - retrying in ${retryDelay / 1000} seconds...`);
+        console.log(
+          `\n🔁 Database not ready (${retries}/${maxRetries}) - retrying in ${retryDelay / 1000} seconds...`,
+        );
         console.log(` Tables found: ${tableCount}`);
         if (retries <= 3) {
           console.log(' If this persists, try resetting the database in Railway dashboard');
@@ -185,65 +186,39 @@ async function main(): Promise<void> {
     jobScheduler.start();
 
     console.log('\n🎉 InventStock is running!');
-    console.log('   Press Ctrl+C to stop\n');
+    console.log(' Press Ctrl+C to stop\n');
 
     // Handle graceful shutdown
     process.on('SIGINT', async () => {
       console.log('\n\n🛑 Shutting down gracefully...');
-      if (jobScheduler) {
-        jobScheduler.stop();
-      }
-      if (healthServer) {
-        await healthServer.stop();
-      }
-      if (bot) {
-        await bot.stop();
-      }
-      if (db) {
-        await db.close();
-      }
+      if (jobScheduler) jobScheduler.stop();
+      if (healthServer) await healthServer.stop();
+      if (bot) await bot.stop();
+      if (db) await db.close();
       console.log('👋 Goodbye!');
       process.exit(0);
     });
 
     process.on('SIGTERM', async () => {
       console.log('\n\n🛑 Shutting down gracefully...');
-      if (jobScheduler) {
-        jobScheduler.stop();
-      }
-      if (healthServer) {
-        await healthServer.stop();
-      }
-      if (bot) {
-        await bot.stop();
-      }
-      if (db) {
-        await db.close();
-      }
+      if (jobScheduler) jobScheduler.stop();
+      if (healthServer) await healthServer.stop();
+      if (bot) await bot.stop();
+      if (db) await db.close();
       console.log('👋 Goodbye!');
       process.exit(0);
     });
 
     // Keep the process running
-    await new Promise(() => {
-      // Infinite promise to keep the process alive
-    });
+    await new Promise(() => {}); // Infinite promise
   } catch (error) {
     console.error('\n❌ Failed to start InventStock:', error);
 
     // Cleanup on error
-    if (jobScheduler) {
-      jobScheduler.stop();
-    }
-    if (healthServer) {
-      await healthServer.stop();
-    }
-    if (bot) {
-      await bot.stop();
-    }
-    if (db) {
-      await db.close();
-    }
+    if (jobScheduler) jobScheduler.stop();
+    if (healthServer) await healthServer.stop();
+    if (bot) await bot.stop();
+    if (db) await db.close();
 
     process.exit(1);
   }
