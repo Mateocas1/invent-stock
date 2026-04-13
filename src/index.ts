@@ -39,6 +39,16 @@ async function main(): Promise<void> {
       console.log(` Path: ${config.database.path}`);
     }
 
+    // =======================
+    // FAILSAFE: Railway Empty DB
+    // =======================
+    const { FailsafeMigrator } = await import('./infrastructure/database/FailsafeMigrator');
+    if (await FailsafeMigrator.isFreshInstall(db)) {
+      console.log('🔍 FAILSAFE: Fresh Railway install detected');
+      await FailsafeMigrator.runBootstrap(db);
+      console.log('✅ FAILSAFE: Bootstrap completed');
+    }
+
     // Wait for database to be fully initialized
     let dbReady = false;
     let retries = 0;
@@ -220,15 +230,19 @@ async function main(): Promise<void> {
     });
 
     // Keep the process running
-    await new Promise(() => {}); // Infinite promise
+    await new Promise(() => {}); // Infinite promise to keep process alive
   } catch (error) {
     console.error('\n❌ Failed to start InventStock:', error);
 
     // Cleanup on error
-    if (jobScheduler) jobScheduler.stop();
-    if (healthServer) await healthServer.stop();
-    if (bot) await bot.stop();
-    if (db) await db.close();
+    try {
+      if (jobScheduler) jobScheduler.stop();
+      if (healthServer) await healthServer.stop();
+      if (bot) await bot.stop();
+      if (db) await db.close();
+    } catch (e) {
+      console.error('Cleanup error:', e);
+    }
 
     process.exit(1);
   }
