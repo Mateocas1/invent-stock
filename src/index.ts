@@ -87,10 +87,9 @@ async function main(): Promise<void> {
       commandQueue,
       stockService,
       alertService,
+      predictionService,
       productRepo: repos.product,
       serviceRepo: repos.service,
-      consumptionRepo: repos.consumption,
-      transactionRepo: repos.transaction,
     });
     console.log('✅ Telegram bot initialized');
 
