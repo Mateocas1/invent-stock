@@ -90,7 +90,7 @@ export class TelegramBotService {
     this.bot.onText(/^\/agregar\s+(.+)$/i, async (msg, match) => {
       const chatId = msg.chat.id;
       await this.enqueueAndRun(chatId, async () => {
-        const args = match![1]!.trim();
+        const args = match![1].trim();
         return await this.handleAgregar(args);
       });
     });
@@ -99,7 +99,7 @@ export class TelegramBotService {
     this.bot.onText(/^\/quitar\s+(.+)$/i, async (msg, match) => {
       const chatId = msg.chat.id;
       await this.enqueueAndRun(chatId, async () => {
-        const args = match![1]!.trim();
+        const args = match![1].trim();
         return await this.handleQuitar(args);
       });
     });
@@ -363,7 +363,7 @@ export class TelegramBotService {
     if (numberIndex === -1) return null;
 
     const productName = parts.slice(0, numberIndex).join(' ').trim();
-    const quantity = parseFloat(parts[numberIndex]!);
+    const quantity = parseFloat(parts[numberIndex]);
     const remainingReason = parts
       .slice(numberIndex + 1)
       .join(' ')
@@ -389,7 +389,7 @@ export class TelegramBotService {
     if (numberIndex === -1) return null;
 
     const productName = parts.slice(0, numberIndex).join(' ').trim();
-    const quantity = parseFloat(parts[numberIndex]!);
+    const quantity = parseFloat(parts[numberIndex]);
     const reasonParts = parts.slice(numberIndex + 1);
     const reason = quotedReasonText || reasonParts.join(' ').trim() || 'ajuste manual';
 

@@ -191,22 +191,32 @@ async function main(): Promise<void> {
     // Handle graceful shutdown
     process.on('SIGINT', async () => {
       console.log('\n\n🛑 Shutting down gracefully...');
-      if (jobScheduler) jobScheduler.stop();
-      if (healthServer) await healthServer.stop();
-      if (bot) await bot.stop();
-      if (db) await db.close();
-      console.log('👋 Goodbye!');
-      process.exit(0);
+      try {
+        if (jobScheduler) jobScheduler.stop();
+        if (healthServer) await healthServer.stop();
+        if (bot) await bot.stop();
+        if (db) await db.close();
+      } catch (error) {
+        console.error('Error during shutdown:', error);
+      } finally {
+        console.log('👋 Goodbye!');
+        process.exit(0);
+      }
     });
 
     process.on('SIGTERM', async () => {
       console.log('\n\n🛑 Shutting down gracefully...');
-      if (jobScheduler) jobScheduler.stop();
-      if (healthServer) await healthServer.stop();
-      if (bot) await bot.stop();
-      if (db) await db.close();
-      console.log('👋 Goodbye!');
-      process.exit(0);
+      try {
+        if (jobScheduler) jobScheduler.stop();
+        if (healthServer) await healthServer.stop();
+        if (bot) await bot.stop();
+        if (db) await db.close();
+      } catch (error) {
+        console.error('Error during shutdown:', error);
+      } finally {
+        console.log('👋 Goodbye!');
+        process.exit(0);
+      }
     });
 
     // Keep the process running

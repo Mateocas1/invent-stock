@@ -59,7 +59,7 @@ export class PredictionEngine {
 
     if (n < 2) {
       // Not enough data for regression, return flat line
-      return { slope: 0, intercept: n === 1 ? data[0]!.y : 0 };
+      return { slope: 0, intercept: n === 1 ? data[0].y : 0 };
     }
 
     let sumX = 0;
