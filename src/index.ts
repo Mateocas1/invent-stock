@@ -57,10 +57,10 @@ async function main(): Promise<void> {
 
     while (!dbReady && retries < maxRetries) {
       try {
-        // Check if database has tables
+        // Check if database has tables (use current_schema() for Railway compatibility)
         const result = await db.query<{ count: number }>(
           config.database.type === 'postgresql'
-            ? "SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema = 'public'"
+            ? 'SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema = current_schema()'
             : 'SELECT COUNT(*) as count FROM sqlite_master WHERE type="table"',
         );
         tableCount = result[0]?.count ?? 0;
